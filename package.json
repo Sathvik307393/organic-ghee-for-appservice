@@ -4,8 +4,7 @@
   "description": "this project is learning purpose nodejs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\"",
-    "start": "nodemon src/app.js -e js,hbs"
+    "start": "node src/app.js"
   },
   "author": "rohit kawade",
   "license": "ISC",
@@ -16,8 +15,6 @@
     "express-session": "^1.17.3",
     "hbs": "^4.2.0",
     "mongoose": "^6.6.5",
-    "node-localstorage": "^2.2.1",
-    "nodemon": "^2.0.20"
-  },
-  "devDependencies": {}
+    "node-localstorage": "^2.2.1"
+  }
 }
