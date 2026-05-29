@@ -30,13 +30,35 @@ hbs.registerPartials(path.join(__dirname, '..', 'views', 'partials'))
 
 
 
-mongoose.connect(process.env.AZURE_COSMOS_CONNECTIONSTRING)
-.then(() => {
-    console.log("MongoDB Connected");
-})
-.catch((err) => {
-    console.error("MongoDB connection error:", err.message);
-})
+const connectionString = process.env.AZURE_COSMOS_CONNECTIONSTRING;
+if (!connectionString) {
+    console.error("MongoDB connection error: AZURE_COSMOS_CONNECTIONSTRING is not defined in the environment variables.");
+} else {
+    let safeConnectionString = connectionString;
+    try {
+        const regex = /^(mongodb(?:\+srv)?:\/\/[^:]+:)(.*)(@[^@]+)$/;
+        const match = connectionString.match(regex);
+        if (match) {
+            const prefix = match[1];
+            const password = match[2];
+            const suffix = match[3];
+            // Encode the password part if it contains special characters and is not already encoded
+            if ((password.includes('/') || password.includes('+') || password.includes('=')) && !password.includes('%')) {
+                safeConnectionString = prefix + encodeURIComponent(password) + suffix;
+            }
+        }
+    } catch (e) {
+        console.error("Error parsing connection string:", e.message);
+    }
+
+    mongoose.connect(safeConnectionString)
+    .then(() => {
+        console.log("MongoDB Connected");
+    })
+    .catch((err) => {
+        console.error("MongoDB connection error:", err.message);
+    });
+}
 const PORT = process.env.PORT || 5656;
 
 app.listen(PORT, () => {
